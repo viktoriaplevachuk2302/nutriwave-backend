@@ -12,31 +12,39 @@ const getProfile = async (req, res) => {
     res.json({ id: doc.id, ...doc.data() });
   } catch (error) {
     console.error('Get profile error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Failed to fetch profile' });
   }
 };
 
 const createOrUpdateProfile = async (req, res) => {
   try {
-    const { name, age, weight, height, gender, goal, activityLevel } = req.body;
+    const { name, age, weight, height, gender, goal, activityLevel, selectedProgram } = req.body;
 
-    const userRef = db.collection('users').doc(req.user.uid);
+    // Валідація та приведення типів
     const data = {
-      name: name || '',
-      age: age || 0,
-      currentWeight: weight || 0,
-      height: height || 0,
+      name: name?.trim() || '',
+      age: age ? parseInt(age, 10) : 0,
+      currentWeight: weight ? parseFloat(weight) : 0,
+      height: height ? parseInt(height, 10) : 0,
       gender: gender || 'other',
-      goal: goal || 'maintain', // lose, gain, maintain
+      goal: goal || 'maintain', 
       activityLevel: activityLevel || 'sedentary',
-      updatedAt: new Date()
+      selectedProgram: selectedProgram || null, 
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     };
 
+    const userRef = db.collection('users').doc(req.user.uid);
+
     await userRef.set(data, { merge: true });
-    res.json({ message: 'Profile updated', data });
+
+    const updatedDoc = await userRef.get();
+    res.status(200).json({
+      message: 'Profile updated successfully',
+      data: { id: updatedDoc.id, ...updatedDoc.data() },
+    });
   } catch (error) {
     console.error('Update profile error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Failed to update profile' });
   }
 };
 
