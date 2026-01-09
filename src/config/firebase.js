@@ -1,12 +1,8 @@
 const admin = require("firebase-admin");
 
-// Читаємо ключ з змінної середовища
-const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-
+// Автоматична ініціалізація — працює на Fly.io, Render, Vercel тощо
 if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-  });
+  admin.initializeApp();
 }
 
 const db = admin.firestore();
