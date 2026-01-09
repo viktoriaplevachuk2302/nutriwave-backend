@@ -1,8 +1,10 @@
 const admin = require("firebase-admin");
 
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+
 if (!admin.apps.length) {
   admin.initializeApp({
-    projectId: "nutriwave-60a92", // твій project_id з Firebase
+    credential: admin.credential.cert(serviceAccount),
   });
 }
 
