@@ -1,8 +1,9 @@
 const admin = require("firebase-admin");
 
-// Автоматична ініціалізація — працює на Fly.io, Render, Vercel тощо
 if (!admin.apps.length) {
-  admin.initializeApp();
+  admin.initializeApp({
+    projectId: "nutriwave-60a92", // твій project_id з Firebase
+  });
 }
 
 const db = admin.firestore();
